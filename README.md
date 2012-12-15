@@ -37,10 +37,10 @@ Installation
 
 1. Download and extract the project
 2. Modify the `cordova.properties` file to match your environment. At a minimum you'll need to modify the `cordova.lib` property which is the path to your PhoneGap framework. Unless you're using PhoneGap 2.2, you might also need to modify the `cordova.android.tools.js` and `cordova.ios.tools.js` as these point to the PhoneGap javascript libraries for their respective platforms.
-3. Finally, import the main cordova build file into your Sencha Touch build.xml file then implement the build you want to run. Assuming the project is extracted to the root directory:
+3. Finally, import the main cordova build file into your Sencha Touch build.xml file then implement the build you want to run. Assuming the project is extracted to the root directory and you're building for Android:
 
         <import file="/sencha-cordova-builder/build-cordova.xml" />
-        <target name="-after-build" depends="-build-cordova-all" />
+        <target name="-after-build" depends="-build-android" />
 
 Usage
 -----
@@ -89,7 +89,7 @@ The Sencha Cordova Builder provides various steps for you to inject your own log
 
 ### Building Android and iOS Together
 
-To build Android and iOS together, plug into the `-after-build` target provided by Sencha Touch as follows:
+As a convenience, you can build Android and iOS together by plugging into the `-after-build` target provided by Sencha Touch as follows:
 
     <target name="-after-build" depends="-build-cordova-all" />
 
