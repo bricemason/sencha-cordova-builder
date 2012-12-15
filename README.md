@@ -5,12 +5,12 @@ Enables the automatic creation, building, and running of PhoneGap (Cordova) proj
 is just a collection of build files, all that's needed is to import a file in your Sencha Touch build.xml and implement
 your logic where you want.
 
-This code has no warranty or license of any kind. You should explore it and use it however you want.
-
 This current release was developed and tested on a Mac. It should work just as well on a PC but testing has not
 been done yet.
 
 This project has absolutely no affiliation with Sencha or PhoneGap.
+
+Released under the MIT license. See LICENSE.md for details.
 
 Goals
 -----
