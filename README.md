@@ -73,6 +73,9 @@ A common scenario might be to tap into the `-after-build-android` phase to autom
         <!-- or all in one shot (clean, compile, emulate) -->
         <exec executable="${cordova.android.project}/cordova/BOOM" />
     </target>
+    
+If you want to rebuild the Android project, you'll need to delete the `_android.built` file that was placed in the root
+of your Sencha Touch app. This file is used as a flag to know when the build process has completed. 
 
 ### Building for iOS
 
@@ -86,6 +89,9 @@ The Sencha Cordova Builder provides various steps for you to inject your own log
 - -after-init-ios
 - -before-build-ios
 - -after-build-ios
+
+If you want to rebuild the Android project, you'll need to delete the `_ios.built` file that was placed in the root
+of your Sencha Touch app. This file is used as a flag to know when the build process has completed. 
 
 ### Building Android and iOS Together
 
@@ -103,6 +109,10 @@ You can of course still tap into the following phases:
 - -after-init-ios
 - -before-build-ios
 - -after-build-ios
+
+If you want to rebuild the Android project, you'll need to delete the `_android.built` and `_ios.built` files that were placed in the root
+of your Sencha Touch app. These files are used as flags to know when the build process has completed. 
+
 
 
 
