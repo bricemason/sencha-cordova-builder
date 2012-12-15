@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   build-cordova.xml
+
+   assembles the main build targets
+
+   by Brice Mason
+
+   http://www.bricemason.com
+   http://www.twitter.com/bricemason
+   http://www.github.com/bricemason
+   http://www.vimeo.com/bricemason
+   brice@bricemason.com
+-->
+<project name="cordova">
+   <import file="check-cordova.xml" />
+   <import file="build-cordova-android.xml" />
+   <import file="build-cordova-ios.xml" />
+
+
+
+   <!-- android initialization and build -->
+   <target name="-init-android" depends="-init-properties, -is-android-built, -is-android-init-ready, -before-init-android-internal, -init-android-internal, -after-init-android-internal" />
+   <target name="-build-android" depends="-init-android, -before-build-android-internal, -build-android-internal, -after-build-android-internal, -deploy-android" />
+
+
+
+   <!-- ios initialization and build -->
+   <target name="-init-ios" depends="-init-properties, -is-ios-built, -is-ios-init-ready, -before-init-ios-internal, -init-ios-internal, -after-init-ios-internal" />
+   <target name="-build-ios" depends="-init-ios, -before-build-ios-internal, -build-ios-internal, -after-build-ios-internal, -deploy-ios" />
+
+
+
+   <!-- build all -->
+   <target name="-build-cordova-all" depends="-build-android">
+      <antcall target="-build-ios" />
+   </target>
+
+
+
+   <target name="-init-properties">
+      <dirname property="cordova.basedir" file="${ant.file.cordova}"/>
+      <property file="${cordova.basedir}/cordova.properties"/>
+   </target>
+</project>

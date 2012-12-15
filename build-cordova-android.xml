@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   build-cordova-android.xml
+
+   initialization and build targets for android
+
+   by Brice Mason
+
+   http://www.bricemason.com
+   http://www.twitter.com/bricemason
+   http://www.github.com/bricemason
+   http://www.vimeo.com/bricemason
+   brice@bricemason.com
+-->
+<project>
+   <import file="check-cordova.xml" />
+   <import file="util-cordova.xml" />
+
+
+
+   <!-- overridables -->
+   <target name="-before-init-android" />
+   <target name="-after-init-android" />
+   <target name="-before-build-android" />
+   <target name="-after-build-android" />
+   
+   <target name="-before-init-android-internal" if="${cordova.android.init.ready}">
+      <antcall target="-before-init-android" />
+   </target>
+
+   <target name="-after-init-android-internal" if="${cordova.android.init.ready}">
+      <antcall target="-after-init-android" />
+   </target>
+
+   <target name="-before-build-android-internal" unless="${cordova.android.built}">
+      <antcall target="-before-build-android" />
+   </target>
+
+   <target name="-after-build-android-internal" unless="${cordova.android.built}">
+      <antcall target="-after-build-android" />
+   </target>
+
+
+
+   <target name="-init-android-internal" if="${cordova.android.init.ready}">
+      <echo message="initializating android build..." />
+      <echo message="creating android project with the following details:" />
+      <echo message="project path: ${cordova.android.project}" />
+      <echo message="project namespace: ${cordova.android.project.namespace}" />
+      <echo message="project name: ${cordova.android.project.name}" />
+
+      <exec executable="${cordova.android.tools.bin.create}">
+         <arg value="${cordova.android.project}" />
+         <arg value="${cordova.android.project.namespace}" />
+         <arg value="${cordova.android.project.name}" />
+      </exec>
+
+      <echo message="android project successfully created at ${cordova.android.project}" />
+
+      <echo message="copying the cordova android js file from ${cordova.android.tools.js} to ${cordova.android.project.js}" />
+
+      <copy file="${cordova.android.tools.js}" tofile="${cordova.android.project.js}" />
+   </target>
+
+
+
+   <target name="-build-android-internal" unless="${cordova.android.built}">
+      <echo message="building android..." />
+
+      <echo message="backing up app.json to app.json.bak" />
+      <copy file="${basedir}/app.json" tofile="${basedir}/app.json.bak" />
+      <echo message="app.json was backed up successfully" />
+
+      <echo message="modifying app.json to include ${cordova.android.project.js} javascript" />
+      <antcall target="-modify-app-json">
+         <param name="js-file" value="${cordova.android.project.js.name}" />
+      </antcall>
+      <echo message="app.json was modified successfully" />
+
+      <echo message="marking android as built..." />
+      <antcall target="-set-flag">
+         <param name="flag-file" value="${cordova.flags.built.android}" />
+      </antcall>
+      <echo message="*** to rebuild android, delete the ${cordova.flags.built.android} file in your sencha app ***" />
+
+      <echo message="marking android as deployable..." />
+      <antcall target="-set-flag">
+         <param name="flag-file" value="${cordova.flags.deploy.android}" />
+      </antcall>
+
+      <echo message="rebuilding sencha app..." />
+      <exec executable="sencha">
+         <arg value="app" />
+         <arg value="build" />
+         <arg value="${args.environment}" />
+      </exec>
+   </target>
+
+
+
+   <target name="-deploy-android" depends="-is-android-deploy-ready" if="${cordova.android.deploy.ready}">
+      <echo message="restoring app.json from backup app.json.bak" />
+      <move file="${basedir}/app.json.bak" tofile="${basedir}/app.json" overwrite="true" />
+      <echo message="app.json was restored successfully" />
+
+      <echo message="deleting contents of android web root ${cordova.android.project.www}" />
+      <delete dir="${cordova.android.project.www}" />
+      <echo message="contents of android web root deleted successfully" />
+
+      <echo message="copying sencha build from ${build.dir}/${args.environment} to android web root ${cordova.android.project.www}" />
+      <copy todir="${cordova.android.project.www}">
+         <fileset dir="${build.dir}/${args.environment}" />
+      </copy>
+      <echo message="sencha build copied to android web root successfully" />
+
+      <echo message="removing android deploy flag..." />
+      <delete file="${cordova.flags.deploy.android}" />
+      <echo message="deploy flag for android removed successfully" />
+
+      <delete file="${cordova.android.project.www}/${cordova.ios.project.js.name}" failonerror="false" />
+   </target>
+</project>

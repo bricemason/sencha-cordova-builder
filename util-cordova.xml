@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   util-cordova.xml
+
+   collection of utility targets to support the system
+
+   by Brice Mason
+
+   http://www.bricemason.com
+   http://www.twitter.com/bricemason
+   http://www.github.com/bricemason
+   http://www.vimeo.com/bricemason
+   brice@bricemason.com
+-->
+<project>
+
+   <target name="-set-flag">
+      <touch file="${flag-file}" />
+   </target>
+
+
+
+   <target name="-modify-app-json">
+      <script language="javascript">
+      <![CDATA[
+          var prependArray = function(a, o) {
+              var cache = new org.json.JSONArray();
+              cache.put(o);
+
+              for(var i = 0; i < a.length(); i++) {
+                  cache.put(a.get(i));
+              }
+
+              return cache;
+          };
+
+          // get the path to app.json
+          var appJsonPath = project.getProperty('basedir') + '/app.json';
+
+          // get the app.json file
+          var appJsonFile = new java.io.File(appJsonPath);
+
+          // get app.json source as string
+          var jsonSource = org.apache.commons.io.FileUtils.readFileToString(appJsonFile);
+
+          // strip the app.json source of comments
+          var regex = "(?s)/\\*.+?\\*/";
+          jsonSource = jsonSource.replaceAll(regex, "");
+
+          // decode the json source
+          var o = new org.json.JSONObject(jsonSource);
+
+          // get the 'js' array
+          var jsArray = o.getJSONArray('js');
+
+          // create a new path
+          var newPath = new org.json.JSONObject();
+          newPath.put('path', project.getProperty('js-file'));
+
+          // prepends the cordova lib to js array
+          jsArray = prependArray(jsArray, newPath);
+          o.put('js', jsArray);
+
+          // stringify the new app.json, pretty-printed
+          var newAppJson = o.toString(3);
+
+          // write new app.json
+          org.apache.commons.io.FileUtils.writeStringToFile(appJsonFile, newAppJson);
+      ]]>
+      </script>
+   </target>   
+
+</project>

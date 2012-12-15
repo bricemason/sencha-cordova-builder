@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   check-cordova.xml
+
+   a collection of checks used in validation of target steps
+
+   by Brice Mason
+
+   http://www.bricemason.com
+   http://www.twitter.com/bricemason
+   http://www.github.com/bricemason
+   http://www.vimeo.com/bricemason
+   brice@bricemason.com
+-->
+<project>
+
+   <target name="-is-android-built">
+      <condition property="cordova.android.built" else="false">
+         <available file="${cordova.flags.built.android}" />
+      </condition>
+   </target>
+
+
+
+   <target name="-is-android-init-ready">
+      <condition property="cordova.android.init.tools.exists" else="false">
+         <and>
+            <available file="${cordova.lib}" type="dir" />
+            <available file="${cordova.android.tools.bin}" type="dir" />
+            <available file="${cordova.android.tools.bin.create}" />
+            <available file="${cordova.android.tools.js}" />
+         </and>
+      </condition>
+
+      <condition property="cordova.android.init.ready">
+         <and>
+            <istrue value="${cordova.android.init.tools.exists}" />
+            <not>
+               <available file="${cordova.android.project}" type="dir" />
+            </not>
+            <not>
+               <istrue value="${cordova.android.built}" />
+            </not>
+         </and>
+      </condition>
+
+      <echo message="checking android initialization using the following resources:" />
+      <echo message="cordova library ${cordova.lib}" />
+      <echo message="android tools ${cordova.android.tools.bin}" />
+      <echo message="android create script ${cordova.android.tools.bin.create}" />
+      <echo message="android javascript file ${cordova.android.tools.js}" />
+      <echo message="android project ${cordova.android.project}" />
+      <echo message="android project built state...${cordova.android.built}" />
+
+      <fail unless="${cordova.android.init.tools.exists}" message="one or more of the resources required to initialize the android project cannot be resolved" />
+   </target>
+
+
+
+   <target name="-is-ios-built">
+      <condition property="cordova.ios.built" else="false">
+         <available file="${cordova.flags.built.ios}" />
+      </condition>
+   </target>
+
+
+
+   <target name="-is-ios-init-ready">
+      <condition property="cordova.ios.init.tools.exists" else="false">
+         <and>
+            <available file="${cordova.lib}" type="dir" />
+            <available file="${cordova.ios.tools.bin}" type="dir" />
+            <available file="${cordova.ios.tools.bin.create}" />
+            <available file="${cordova.ios.tools.js}" />
+         </and>
+      </condition>
+
+      <condition property="cordova.ios.init.ready">
+         <and>
+            <istrue value="${cordova.ios.init.tools.exists}" />
+            <not>
+               <available file="${cordova.ios.project}" type="dir" />
+            </not>
+            <not>
+               <istrue value="${cordova.ios.built}" />
+            </not>
+         </and>
+      </condition>
+
+      <echo message="checking ios initialization using the following resources:" />
+      <echo message="cordova library ${cordova.lib}" />
+      <echo message="ios tools ${cordova.ios.tools.bin}" />
+      <echo message="ios create script ${cordova.ios.tools.bin.create}" />
+      <echo message="ios javascript file ${cordova.ios.tools.js}" />
+      <echo message="ios project ${cordova.ios.project}" />
+      <echo message="ios project built state...${cordova.ios.built}" />
+
+      <fail unless="${cordova.ios.init.tools.exists}" message="one or more of the resources required to initialize the ios project cannot be resolved" />
+   </target>
+
+
+
+   <target name="-is-android-deploy-ready">
+      <condition property="cordova.android.deploy.ready" else="false">
+         <available file="${cordova.flags.deploy.android}" />
+      </condition>
+   </target>
+
+
+
+   <target name="-is-ios-deploy-ready">
+      <condition property="cordova.ios.deploy.ready" else="false">
+         <available file="${cordova.flags.deploy.ios}" />
+      </condition>
+   </target>
+
+</project>

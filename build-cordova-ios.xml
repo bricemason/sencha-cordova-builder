@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   build-cordova-ios.xml
+
+   initialization and build targets for ios
+
+   by Brice Mason
+
+   http://www.bricemason.com
+   http://www.twitter.com/bricemason
+   http://www.github.com/bricemason
+   http://www.vimeo.com/bricemason
+   brice@bricemason.com
+-->
+<project>
+   <import file="check-cordova.xml" />
+   <import file="util-cordova.xml" />
+
+
+
+   <!-- overridables -->
+   <target name="-before-init-ios" />
+   <target name="-after-init-ios" />
+   <target name="-before-build-ios" />
+   <target name="-after-build-ios" />
+
+   <target name="-before-init-ios-internal" if="${cordova.ios.init.ready}">
+      <antcall target="-before-init-ios" />
+   </target>
+
+   <target name="-after-init-ios-internal" if="${cordova.ios.init.ready}">
+      <antcall target="-after-init-ios" />
+   </target>
+
+   <target name="-before-build-ios-internal" unless="${cordova.ios.built}">
+      <antcall target="-before-build-ios" />
+   </target>
+
+   <target name="-after-build-ios-internal" unless="${cordova.ios.built}">
+      <antcall target="-after-build-ios" />
+   </target>
+
+
+
+   <target name="-init-ios-internal" if="${cordova.ios.init.ready}">
+      <echo message="initializating ios build..." />
+      <echo message="creating ios project with the following details:" />
+      <echo message="project path: ${cordova.ios.project}" />
+      <echo message="project namespace: ${cordova.ios.project.namespace}" />
+      <echo message="project name: ${cordova.ios.project.name}" />
+
+      <exec executable="${cordova.ios.tools.bin.create}">
+         <arg value="${cordova.ios.project}" />
+         <arg value="${cordova.ios.project.namespace}" />
+         <arg value="${cordova.ios.project.name}" />
+      </exec>
+
+      <echo message="ios project successfully created at ${cordova.ios.project}" />
+
+      <echo message="copying the cordova ios js file from ${cordova.ios.tools.js} to ${cordova.ios.project.js}" />
+
+      <copy file="${cordova.ios.tools.js}" tofile="${cordova.ios.project.js}" />
+   </target>
+
+
+
+   <target name="-build-ios-internal" unless="${cordova.ios.built}">
+      <echo message="building ios..." />
+
+      <echo message="backing up app.json to app.json.bak" />
+      <copy file="${basedir}/app.json" tofile="${basedir}/app.json.bak" />
+      <echo message="app.json was backed up successfully" />
+
+      <echo message="modifying app.json to include ${cordova.ios.project.js} javascript" />
+      <antcall target="-modify-app-json">
+         <param name="js-file" value="${cordova.ios.project.js.name}" />
+      </antcall>
+      <echo message="app.json was modified successfully" />
+
+      <echo message="marking ios as built..." />
+      <antcall target="-set-flag">
+         <param name="flag-file" value="${cordova.flags.built.ios}" />
+      </antcall>
+      <echo message="*** to rebuild ios, delete the ${cordova.flags.built.ios} file in your sencha app ***" />
+
+      <echo message="marking ios as deployable..." />
+      <antcall target="-set-flag">
+         <param name="flag-file" value="${cordova.flags.deploy.ios}" />
+      </antcall>
+
+      <echo message="rebuilding sencha app..." />
+      <exec executable="sencha">
+         <arg value="app" />
+         <arg value="build" />
+         <arg value="${args.environment}" />
+      </exec>
+   </target>
+
+
+
+   <target name="-deploy-ios" depends="-is-ios-deploy-ready" if="${cordova.ios.deploy.ready}">
+      <echo message="restoring app.json from backup app.json.bak" />
+      <move file="${basedir}/app.json.bak" tofile="${basedir}/app.json" overwrite="true" />
+      <echo message="app.json was restored successfully" />
+
+      <echo message="deleting contents of ios web root ${cordova.ios.project.www}" />
+      <delete dir="${cordova.ios.project.www}" />
+      <echo message="contents of ios web root deleted successfully" />
+
+      <echo message="copying sencha build from ${build.dir}/${args.environment} to ios web root ${cordova.ios.project.www}" />
+      <copy todir="${cordova.ios.project.www}">
+         <fileset dir="${build.dir}/${args.environment}" />
+      </copy>
+      <echo message="sencha build copied to ios web root successfully" />
+
+      <echo message="removing ios deploy flag..." />
+      <delete file="${cordova.flags.deploy.ios}" />
+      <echo message="deploy flag for ios removed successfully" />
+
+      <delete file="${cordova.ios.project.www}/${cordova.android.project.js.name}" failonerror="false" />
+   </target>
+</project>
