@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Sencha Cordova Builder by bricemason</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Sencha Cordova Builder</h1>
+        <p>Enables the automatic creation, building, and running of PhoneGap (Cordova) projects with Sencha Touch.</p>
+
+        <p class="view"><a href="https://github.com/bricemason/sencha-cordova-builder">View the Project on GitHub <small>bricemason/sencha-cordova-builder</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/bricemason/sencha-cordova-builder/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/bricemason/sencha-cordova-builder/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/bricemason/sencha-cordova-builder">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Sencha Cordova Builder</h1>
+
+<p>Enables the automatic creation, building, and running of PhoneGap (Cordova) projects with Sencha Touch. Since the project
+is just a collection of build files, all that's needed is to import a file in your Sencha Touch build.xml and implement
+your logic where you want.</p>
+
+<p>This current release was developed and tested on a Mac. It should work just as well on a PC but testing has not
+been done yet.</p>
+
+<p>This project has absolutely no affiliation with Sencha or PhoneGap.</p>
+
+<p>Released under the MIT license. See LICENSE.md for details.</p>
+
+<h2>Goals</h2>
+
+<ul>
+<li>Simple installation and configuration</li>
+<li>Keep it familiar, no extra tools/scripts required</li>
+<li>Work with the framework, not against it</li>
+<li>Use conventions already provided by Sencha Touch</li>
+</ul><h2>Requirements</h2>
+
+<p>Assuming you want to develop for both Android and iOS:</p>
+
+<ul>
+<li>Android SDK</li>
+<li>Mac</li>
+<li>xCode</li>
+<li>PhoneGap (Cordova) 2.2+</li>
+<li>Sencha Touch 2.1+</li>
+<li>Sencha Cmd 3.0+</li>
+</ul><h2>Installation</h2>
+
+<ol>
+<li>Download and extract the project</li>
+<li>Modify the <code>cordova.properties</code> file to match your environment. At a minimum you'll need to modify the <code>cordova.lib</code> property which is the path to your PhoneGap framework. Unless you're using PhoneGap 2.2, you might also need to modify the <code>cordova.android.tools.js</code> and <code>cordova.ios.tools.js</code> as these point to the PhoneGap javascript libraries for their respective platforms.</li>
+<li>
+<p>Finally, import the main cordova build file into your Sencha Touch build.xml file then implement the build you want to run. Assuming the project is extracted to the root directory and you're building for Android:</p>
+
+<pre><code>&lt;import file="/sencha-cordova-builder/build-cordova.xml" /&gt;
+&lt;target name="-after-build" depends="-build-android" /&gt;
+</code></pre>
+</li>
+</ol><h2>Usage</h2>
+
+<h3>Building for Android</h3>
+
+<p>To build for Android, plug into the <code>-after-build</code> target provided by Sencha Touch as follows:</p>
+
+<pre><code>&lt;target name="-after-build" depends="-build-android" /&gt;
+</code></pre>
+
+<p>The Sencha Cordova Builder provides various steps for you to inject your own logic during some key phases in the build process.</p>
+
+<ul>
+<li>-before-init-android</li>
+<li>-after-init-android</li>
+<li>-before-build-android</li>
+<li>-after-build-android</li>
+</ul><p>A common scenario might be to tap into the <code>-after-build-android</code> phase to automatically clean/compile/run your Android project. Assuming you're on a mac, here are some examples:</p>
+
+<pre><code>&lt;target name="-after-build-android"&gt;
+    &lt;!-- clean --&gt;
+    &lt;exec executable="${cordova.android.project}/cordova/clean" /&gt;
+
+    &lt;!-- compile --&gt;
+    &lt;exec executable="${cordova.android.project}/cordova/debug" /&gt;
+
+    &lt;!-- emulate --&gt;
+    &lt;exec executable="${cordova.android.project}/cordova/emulate" /&gt;
+
+    &lt;!-- or all in one shot (clean, compile, emulate) --&gt;
+    &lt;exec executable="${cordova.android.project}/cordova/BOOM" /&gt;
+&lt;/target&gt;
+</code></pre>
+
+<p>If you want to rebuild the Android project, you'll need to delete the <code>_android.built</code> file that was placed in the root
+of your Sencha Touch app. This file is used as a flag to know when the build process has completed. </p>
+
+<h3>Building for iOS</h3>
+
+<p>To build for iOS, plug into the <code>-after-build</code> target provided by Sencha Touch as follows:</p>
+
+<pre><code>&lt;target name="-after-build" depends="-build-ios" /&gt;
+</code></pre>
+
+<p>The Sencha Cordova Builder provides various steps for you to inject your own logic during some key phases in the build process.</p>
+
+<ul>
+<li>-before-init-ios</li>
+<li>-after-init-ios</li>
+<li>-before-build-ios</li>
+<li>-after-build-ios</li>
+</ul><p>If you want to rebuild the Android project, you'll need to delete the <code>_ios.built</code> file that was placed in the root
+of your Sencha Touch app. This file is used as a flag to know when the build process has completed. </p>
+
+<h3>Building Android and iOS Together</h3>
+
+<p>As a convenience, you can build Android and iOS together by plugging into the <code>-after-build</code> target provided by Sencha Touch as follows:</p>
+
+<pre><code>&lt;target name="-after-build" depends="-build-cordova-all" /&gt;
+</code></pre>
+
+<p>You can of course still tap into the following phases:</p>
+
+<ul>
+<li>-before-init-android</li>
+<li>-after-init-android</li>
+<li>-before-build-android</li>
+<li>-after-build-android</li>
+<li>-before-init-ios</li>
+<li>-after-init-ios</li>
+<li>-before-build-ios</li>
+<li>-after-build-ios</li>
+</ul><p>If you want to rebuild the Android project, you'll need to delete the <code>_android.built</code> and <code>_ios.built</code> files that were placed in the root
+of your Sencha Touch app. These files are used as flags to know when the build process has completed. </p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/bricemason">bricemason</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
