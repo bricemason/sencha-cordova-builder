@@ -1,0 +1,201 @@
+#!/bin/bash
+#
+#  sencha
+#
+#  Allows Sencha SDK Tools for Sencha Touch 2.0
+#  to co-exist with Sencha Cmd for Sencha Touch 2.1
+#
+#  by Brice Mason
+#
+#  http://www.bricemason.com
+#  http://www.twitter.com/bricemason
+#  http://www.github.com/bricemason
+#  http://www.vimeo.com/bricemason
+#  brice@bricemason.com
+
+# invocation source
+SOURCE=`ps -o state= -p $PPID | sed 's/ *$//g'`
+
+# directory of this script
+THISDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# install | uninstall | args to sencha command
+CMD=$1
+
+# take over the 'sencha' command
+SENCHAALIAS="export PATH=$THISDIR:\$PATH"
+
+# sencha sdk tools
+SENCHA2LINE="export PATH=$SENCHA_SDK_TOOLS_2_0_0_BETA3:\$PATH"
+
+# sencha cmd
+SENCHA3LINE="export PATH=$SENCHA_CMD_3_0_0:\$PATH"
+
+# profile scripts to manage
+PROFILESCRIPTS=(~/.bash_profile ~/.bashrc)
+
+# build flags to remove
+BUILDFLAGS=(_android.built _android.deploy _ios.built _ios.deploy)
+
+# formats
+bold=`tput bold`
+normal=`tput sgr0`
+
+function header {
+   echo "=================================================="
+   echo "Sencha Tools Bridge by Brice Mason"
+   echo "http://www.github.com/bricemason/sencha-tools-bridge"
+   echo "http://bricemason.github.com/sencha-cordova-builder"
+   echo "=================================================="
+}
+
+function backupProfileScripts {
+   for script in "${PROFILESCRIPTS[@]}"
+   do
+      echo "backing up $script to $script.sencha-tools-bridge-save"
+      cp $script "$script.sencha-tools-bridge-save"
+   done
+}
+
+function removeLine {
+   local LINETOREMOVE=$1
+
+   for script in "${PROFILESCRIPTS[@]}"
+   do
+      removeLineFromFile "$LINETOREMOVE" $script
+   done
+}
+
+function removeLineFromFile {
+   local LINETOREMOVE=$1
+   local FROMFILE=$2
+   local CONTENT=""
+
+   while read LINE
+   do
+      if [ "$LINE" != "$LINETOREMOVE" ]; then
+         CONTENT="$CONTENT$LINE\n"
+      fi 
+   done < $FROMFILE
+
+   # write the new file
+   echo -e $CONTENT > $FROMFILE
+
+   echo "Removed $LINETOREMOVE from $FROMFILE"
+}
+
+function addLine {
+   local LINETOADD=$1
+
+   for script in "${PROFILESCRIPTS[@]}"
+   do
+      addLineToFile "$LINETOADD" $script
+   done
+}
+
+function addLineToFile {
+   local LINETOADD=$1
+   local TOFILE=$2
+
+   if grep -F "$LINETOADD" $TOFILE; then
+      return
+   fi
+
+   echo -e "$LINETOADD" >> $TOFILE
+
+   echo "Added $LINETOADD to $TOFILE"
+}
+
+function install {
+   echo "Installing Sencha Tools Bridge..."
+
+   echo "Backing up profile scripts"
+   backupProfileScripts
+
+   echo "Removing Sencha SDK Tools and Sencha Cmd from PATH"
+   removeLine "$SENCHA2LINE"
+   removeLine "$SENCHA3LINE"
+
+   echo "Creating alias to 'sencha' command"
+   addLine "$SENCHAALIAS"
+
+   echo "--------------------------------------------------"
+   echo "Sencha Tools Bridge installed successfully"
+}
+
+function uninstall {
+   echo "Uninstalling Sencha Tools Bridge..."
+
+   echo "Backing up profile scripts"
+   backupProfileScripts
+
+   echo "Adding Sencha SDK Tools and Sencha Cmd to PATH"
+   addLine "$SENCHA2LINE"
+   addLine "$SENCHA3LINE"
+
+   echo "Removing alias to 'sencha' command"
+   removeLine "$SENCHAALIAS"
+
+   echo "--------------------------------------------------"
+   echo "Sencha Tools Bridge unintalled successfully"
+}
+
+function removeBuildFlags {
+   if [ "$SOURCE" == "S" ]; then
+      for flag in "${BUILDFLAGS[@]}"
+      do
+         if [ -f $flag ]; then
+            rm $flag
+         fi
+      done
+   fi
+}
+
+function getSenchaFrameworkVersion {
+   local VERSION=""
+
+   if [ -f "version.txt" ]; then
+      # inside a framework directory
+      VERSION=`cat version.txt`
+
+      if [[ $VERSION =~ 2\.0.* ]]; then
+         # inside framework 2.0x
+         echo 2
+      else
+         # inside framework 2.1x
+         echo 3
+      fi
+   elif [ -d "sdk" ]; then
+      # inside a 2.0x app
+      echo 2
+   elif [ -d "touch" ]; then
+      # inside a 2.1x app
+      echo 3
+   else
+      # all else fails, fail over to cmd
+      echo 3
+   fi
+}
+
+function senchaBridge {
+   local FRAMEWORKVERSION=$(getSenchaFrameworkVersion)
+   
+   if [ $FRAMEWORKVERSION -eq 2 ]; then
+      # pass command to sdk tools
+      $SENCHA_SDK_TOOLS_2_0_0_BETA3/sencha "$@"
+   elif [ $FRAMEWORKVERSION -eq 3 ]; then
+      # pass command to cmd
+      $SENCHA_CMD_3_0_0/sencha "$@"
+   fi
+}
+
+if [ ! -z $CMD ] && [ $CMD == "install" ]; then
+   header
+   install
+elif [ ! -z $CMD ] && [ $CMD == "uninstall" ]; then
+   header
+   uninstall
+else
+   removeBuildFlags
+   senchaBridge "$@"
+fi
