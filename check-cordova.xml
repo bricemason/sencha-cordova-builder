@@ -14,6 +14,34 @@
 -->
 <project>
 
+   <target name="-check-os">
+      <!-- check for windows -->
+      <condition property="cordova.os.is-windows" else="false">
+         <os family="windows" />
+      </condition>
+
+      <!-- check for unix -->
+      <condition property="cordova.os.is-unix" else="false">
+         <os family="unix" />
+      </condition>
+   </target>
+
+
+
+   <target name="-set-windows-create-script" depends="-check-os" if="${cordova.os.is-windows}">
+      <property name="cordova.android.tools.bin.create" value="${cordova.android.tools.bin}\\create.bat" />
+      <property name="cordova.ios.tools.bin.create"     value="${cordova.ios.tools.bin}\\create.bat"     />
+   </target>
+
+
+
+   <target name="-set-unix-create-script" depends="-check-os" if="${cordova.os.is-unix}">
+      <property name="cordova.android.tools.bin.create" value="${cordova.android.tools.bin}/create" />
+      <property name="cordova.ios.tools.bin.create"     value="${cordova.ios.tools.bin}/create"     />
+   </target>
+
+
+
    <target name="-is-android-built">
       <condition property="cordova.android.built" else="false">
          <available file="${cordova.flags.built.android}" />
@@ -22,13 +50,12 @@
 
 
 
-   <target name="-is-android-init-ready">
+   <target name="-is-android-init-ready" depends="-set-windows-create-script, -set-unix-create-script">
       <condition property="cordova.android.init.tools.exists" else="false">
          <and>
             <available file="${cordova.lib}" type="dir" />
             <available file="${cordova.android.tools.bin}" type="dir" />
             <available file="${cordova.android.tools.bin.create}" />
-            <available file="${cordova.android.tools.js}" />
          </and>
       </condition>
 
@@ -48,7 +75,6 @@
       <echo message="cordova library ${cordova.lib}" />
       <echo message="android tools ${cordova.android.tools.bin}" />
       <echo message="android create script ${cordova.android.tools.bin.create}" />
-      <echo message="android javascript file ${cordova.android.tools.js}" />
       <echo message="android project ${cordova.android.project}" />
       <echo message="android project built state...${cordova.android.built}" />
 
@@ -65,13 +91,12 @@
 
 
 
-   <target name="-is-ios-init-ready">
+   <target name="-is-ios-init-ready" depends="-set-windows-create-script, -set-unix-create-script">
       <condition property="cordova.ios.init.tools.exists" else="false">
          <and>
             <available file="${cordova.lib}" type="dir" />
             <available file="${cordova.ios.tools.bin}" type="dir" />
             <available file="${cordova.ios.tools.bin.create}" />
-            <available file="${cordova.ios.tools.js}" />
          </and>
       </condition>
 
@@ -91,7 +116,6 @@
       <echo message="cordova library ${cordova.lib}" />
       <echo message="ios tools ${cordova.ios.tools.bin}" />
       <echo message="ios create script ${cordova.ios.tools.bin.create}" />
-      <echo message="ios javascript file ${cordova.ios.tools.js}" />
       <echo message="ios project ${cordova.ios.project}" />
       <echo message="ios project built state...${cordova.ios.built}" />
 

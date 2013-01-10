@@ -38,8 +38,22 @@
 
 
 
-   <target name="-init-properties">
+   <target name="-init-properties" depends="-make-unix-property-paths, -make-windows-property-paths">
       <dirname property="cordova.basedir" file="${ant.file.cordova}"/>
       <property file="${cordova.basedir}/cordova.properties"/>
+   </target>
+
+
+
+   <target name="-make-unix-property-paths" depends="-check-os" if="${cordova.os.is-unix}">
+      <dirname property="cordova.basedir" file="${ant.file.cordova}"/>
+      <replace file="${cordova.basedir}/cordova.properties" token="\\" value="/" />
+   </target>
+
+
+
+   <target name="-make-windows-property-paths" depends="-check-os" if="${cordova.os.is-windows}">
+      <dirname property="cordova.basedir" file="${ant.file.cordova}"/>
+      <replace file="${cordova.basedir}/cordova.properties" token="/" value="\\" />
    </target>
 </project>

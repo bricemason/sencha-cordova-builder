@@ -57,6 +57,16 @@
 
       <echo message="ios project successfully created at ${cordova.ios.project}" />
 
+      <script language="javascript">
+         var versionFile   = new java.io.File(project.getProperty('cordova.lib') + '/VERSION');
+         var versionString = org.apache.commons.io.FileUtils.readFileToString(versionFile);
+         var regex = "\\n";
+         versionString = versionString.replaceAll(regex, "");
+         project.setProperty('cordova.lib.version', versionString);
+      </script>
+      
+      <property name="cordova.ios.tools.js" value="${cordova.ios.project.www}/cordova-${cordova.lib.version}.js" />
+
       <echo message="copying the cordova ios js file from ${cordova.ios.tools.js} to ${cordova.ios.project.js}" />
 
       <copy file="${cordova.ios.tools.js}" tofile="${cordova.ios.project.js}" />

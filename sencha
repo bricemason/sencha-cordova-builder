@@ -49,6 +49,19 @@ function header {
    echo "=================================================="
 }
 
+function proxyHeader {
+   echo "=================================================="
+   echo "The call to the 'sencha' command has been proxied by the Sencha Tools Bridge project."     
+   echo
+   echo "This project is maintained by Brice Mason:"
+   echo "http://www.github.com/bricemason/sencha-tools-bridge"
+   echo "http://bricemason.github.com/sencha-cordova-builder"
+   echo
+   echo "If you'd like to uninstall this proxy, execute the command:"
+   echo "$THISDIR/sencha uninstall"
+   echo "=================================================="
+}
+
 function backupProfileScripts {
    for script in "${PROFILESCRIPTS[@]}"
    do
@@ -196,6 +209,7 @@ elif [ ! -z $CMD ] && [ $CMD == "uninstall" ]; then
    header
    uninstall
 else
+   proxyHeader
    removeBuildFlags
    senchaBridge "$@"
 fi

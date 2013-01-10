@@ -26,6 +26,7 @@ Assuming you want to develop for both Android and iOS:
 
 - Android SDK
 - Mac
+- Windows is also supported
 - xCode
 - PhoneGap (Cordova) 2.0+
 - Sencha Touch 2.1+
@@ -37,7 +38,7 @@ Mac Installation
 1. If you already have the [Sencha Tools Bridge](http://www.github.com/bricemason/sencha-tools-bridge/) installed, uninstall that first.
 2. Download and extract the project
 3. Install the script inside the project as `./sencha install`
-4. Modify the `cordova.properties` file to match your environment. At a minimum you'll need to modify the `cordova.lib` property which is the path to your PhoneGap framework. Unless you're using PhoneGap 2.2, you might also need to modify the `cordova.android.tools.js` and `cordova.ios.tools.js` as these point to the PhoneGap javascript libraries for their respective platforms.
+4. Modify the `cordova.properties` file to match your environment by modifying the `cordova.lib` property which is the path to your PhoneGap framework.
 5. Finally, import the main cordova build file into your Sencha Touch build.xml file then implement the build you want to run. Assuming the project is extracted to the root directory and you're building for Android:
 
         <import file="/sencha-cordova-builder/build-cordova.xml" />
@@ -46,8 +47,8 @@ Mac Installation
 Windows Installation
 --------------------
 
-1. Download the extract the project
-2. Modify the `cordova.properties` file to match your environment. At a minimum you'll need to modify the `cordova.lib` property which is the path to your PhoneGap framework as well as the `cordova.android.tools.bin.create` and `cordova.ios.tools.bin.create` keys to reference the `create.bat` scripts. Unless you're using PhoneGap 2.2, you might also need to modify the `cordova.android.tools.js` and `cordova.ios.tools.js` as these point to the PhoneGap javascript libraries for their respective platforms.
+1. Download and extract the project
+2. Modify the `cordova.properties` file to match your environment by modifying the `cordova.lib` property which is the path to your PhoneGap framework.
 3. Finally, import the main cordova build file into your Sencha Touch build.xml file then implement the build you want to run. Assuming the project is extracted to the root directory and you're building for Android:
 
         <import file="/sencha-cordova-builder/build-cordova.xml" />
