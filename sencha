@@ -84,15 +84,7 @@ function removeLineFromFile {
    local FROMFILE=$2
    local CONTENT=""
 
-   while read LINE
-   do
-      if [ "$LINE" != "$LINETOREMOVE" ]; then
-         CONTENT="$CONTENT$LINE\n"
-      fi 
-   done < $FROMFILE
-
-   # write the new file
-   echo -e $CONTENT > $FROMFILE
+   sed '/\$LINETOREMOVE/d' $FROMFILE
 
    echo "Removed $LINETOREMOVE from $FROMFILE"
 }
