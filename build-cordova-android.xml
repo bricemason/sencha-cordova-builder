@@ -70,7 +70,7 @@
          project.setProperty('cordova.lib.version', versionString);
       </script>
 
-      <property name="cordova.android.tools.js" value="${cordova.android.project.www}/cordova-${cordova.lib.version}.js" />
+      <property name="cordova.android.tools.js" value="${cordova.android.project.www}/cordova.js" />
 
       <echo message="copying the cordova android js file from ${cordova.android.tools.js} to ${cordova.android.project.js}" />
 
